@@ -71,8 +71,19 @@ class Calculator {
         this.operator = null;
     }
 
+    getFormattedNumber(number) {
+        const parts = number.split('.');
+        const firstPart = parts[0];
+        const secondPart = parts[1] ? parts[1] : '';
+        if (!firstPart || firstPart === '0') {
+            return number;
+        } else {
+            return parseFloat(firstPart).toLocaleString('en') + '.' + secondPart;
+        }
+    }
+
     updateDisplay() {
-        this.currentOperandElement.innerText = this.currentOperand ? this.currentOperand : '';
+        this.currentOperandElement.innerText = this.currentOperand ? this.getFormattedNumber(this.currentOperand) : '';
         this.previousOperandElement.innerText = this.previousOperand ? this.previousOperand + ' ' + this.operator : '';
     }
 }
