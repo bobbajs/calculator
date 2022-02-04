@@ -15,29 +15,24 @@ class Calculator {
     }
 
     appendNumber(number) {
-        if (this.currentOperand === '0' && number === '0') {
+        if ((this.currentOperand === '0' && number === '0') || (this.currentOperand.includes('.') && number === '.')) {
             return;
 
         }
-        this.currentOperand = this.currentOperand === null ? number : this.currentOperand + number;
-        this.displayResult();
+        this.currentOperand = this.currentOperand === '' ? number : this.currentOperand + number;
     }
 
     chooseOperator(operator) {
-        this.previousOperand = this.previousOperand === null ? this.currentOperand : this.calculate();
+        this.previousOperand = this.previousOperand === '' ? this.currentOperand : this.calculate();
         this.operator = operator;
-        this.currentOperand = null;
-
-        this.displayResult();
+        this.currentOperand = '';
     }
 
     calculate() {
-        if (this.currentOperand === '') {
-            return;
-        }
-
         const currentNumber = parseFloat(this.currentOperand);
         const previousNumber = parseFloat(this.previousOperand);
+
+        if (isNaN(currentNumber) || isNaN(previousNumber)) return '';
         let result;
 
         switch (this.operator) {
@@ -62,24 +57,21 @@ class Calculator {
 
     sum() {
         this.currentOperand = this.calculate();
-        this.previousOperand = null;
-        this.operator = null;
-        this.displayResult();
+        this.previousOperand = '';
+        this.operator = '';
     }
 
     delete() {
         this.currentOperand = this.currentOperand.substring(0, this.currentOperand.length - 1);
-        this.displayResult();
     }
 
     allClear() {
         this.previousOperand = '';
         this.currentOperand = '';
         this.operator = null;
-        this.displayResult();
     }
 
-    displayResult() {
+    updateDisplay() {
         this.currentOperandElement.innerText = this.currentOperand ? this.currentOperand : '';
         this.previousOperandElement.innerText = this.previousOperand ? this.previousOperand + ' ' + this.operator : '';
     }
@@ -89,24 +81,29 @@ const calculator = new Calculator(previousOperand, currentOperand);
 
 allClearButton.addEventListener('click', () => {
     calculator.allClear();
+    calculator.updateDisplay();
 });
 
 deleteButton.addEventListener('click', () => {
     calculator.delete();
+    calculator.updateDisplay();
 });
 
 sumButton.addEventListener('click', () => {
     calculator.sum();
+    calculator.updateDisplay();
 });
 
 operatorButtons.forEach(item => {
     item.addEventListener('click', (e) => {
         calculator.chooseOperator(e.target.innerText);
+        calculator.updateDisplay();
     })
 });
 
 numberButtons.forEach(item => {
     item.addEventListener('click', (e) => {
         calculator.appendNumber(e.target.innerText);
+        calculator.updateDisplay();
     })
 });
